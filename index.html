@@ -248,6 +248,7 @@
             box-shadow: 0 10px 25px rgba(200, 180, 160, 0.4);
         }
 
+        /* 将顶部两张容易露白底的图片放进纯白胶囊形背景框里 */
         .poster-header-pill {
             display: flex;
             align-items: center;
@@ -427,6 +428,7 @@
 
         <div id="game-over-mask">
             <div id="capture-area">
+                <!-- 纯白胶囊底座：彻底包裹可能带白底的jpg/png图片 -->
                 <div class="poster-header-pill">
                     <img src="gonggu.png" alt="巩固" style="width: 32px; height: 32px; object-fit: contain;">
                     <div class="poster-badge">✨ 苗友成绩单 ✨</div>
@@ -435,6 +437,7 @@
                 <div class="poster-title">合成大苗哥</div>
                 
                 <div class="score-layout">
+                    <!-- 背景图模式的彩蛋插图，避免拉伸 -->
                     <div class="poster-egg-img"></div>
                     <div class="poster-score-box">
                         <div class="poster-score-label">最终总战力</div>
@@ -638,14 +641,11 @@
         ROLES.forEach((role, index) => {
             const num = index + 1;
             const img = new Image();
-            // 已添加 .jfif 支持
             const candidatePaths = [
                 `./images/role(${num}).png`,
                 `./images/role(${num}).jpg`,
-                `./images/role(${num}).jfif`,
                 `./images/role${num}.png`,
-                `./images/role${num}.jpg`,
-                `./images/role${num}.jfif`
+                `./images/role${num}.jpg`
             ];
             let attempt = 0;
             img.onerror = () => {
@@ -671,6 +671,7 @@
     const engine = Engine.create({ enableSleeping: false });
     engine.gravity.y = 1.3;
 
+    // 增加 pixelRatio 支持，彻底解决高刷屏手机上小球渲染模糊的问题
     const render = Render.create({
         element: wrapper,
         engine: engine,
@@ -882,6 +883,7 @@
         const finalPosterImg = document.getElementById('final-poster-img');
         const genBtn = document.getElementById('gen-poster-btn');
 
+        // 锁定高精度缩放配置，杜绝任何形变拉伸
         html2canvas(captureArea, {
             scale: 3,
             backgroundColor: "#FFF5E1",
