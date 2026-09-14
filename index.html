@@ -274,7 +274,7 @@
             40%, 60% { transform: translate3d(4px, 0, 0); }
         }
 
-        /* 授权启动页 */
+        /* 授权启动页 - 难度选择 */
         #init-mask {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -298,13 +298,11 @@
             font-size: 14px;
             font-weight: bold;
             text-align: center;
-            margin-bottom: 40px;
+            margin-bottom: 30px;
             padding: 0 20px;
-            line-height: 1.6;
         }
 
-        /* 暂停与存档蒙层 */
-        #pause-mask {
+        #pause-mask, #game-over-mask {
             display: none;
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -316,6 +314,8 @@
             align-items: center;
             z-index: 40;
         }
+        #game-over-mask { z-index: 50; background: rgba(255, 248, 234, 0.95); padding: 10px; overflow-y: auto; }
+        
         .pause-title {
             font-size: 32px;
             font-weight: 900;
@@ -323,19 +323,6 @@
             letter-spacing: 4px;
             margin-bottom: 25px;
             text-shadow: 0 4px 10px rgba(210, 105, 30, 0.2);
-        }
-
-        #game-over-mask {
-            display: none;
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(255, 248, 234, 0.95);
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 50;
-            padding: 10px;
-            overflow-y: auto;
         }
 
         #capture-area {
@@ -375,7 +362,7 @@
             font-size: 26px;
             font-weight: 900;
             color: #D2691E;
-            margin: 6px 0 12px 0;
+            margin: 0;
             letter-spacing: 2px;
             text-align: center;
             white-space: nowrap;
@@ -525,11 +512,21 @@
 
 <audio id="bgm" src="./my-bgm.mp3" loop preload="auto"></audio>
 
-<!-- 启动授权页：解决iOS无法调用摇一摇和音频的问题 -->
+<!-- 启动授权页 - 难度选择 -->
 <div id="init-mask">
     <div class="init-title">合成大苗哥</div>
-    <div class="init-desc">为了获得完整的摇晃体感与音效体验<br>请点击下方按钮进入游戏</div>
-    <button id="start-game-btn" class="btn-core btn-orange" style="width: 220px; font-size: 18px; padding: 15px 0;">进入游戏 ▶️</button>
+    <div class="init-desc">请选择适合你的挑战模式</div>
+    <div class="btn-group" style="width: 250px; gap: 15px;">
+        <button class="btn-core btn-green" onclick="startGame('easy')">
+            🟢 初级模式<br><span style="font-size:12px;font-weight:normal;">含 炸弹+摇晃道具，开启物理体感</span>
+        </button>
+        <button class="btn-core btn-blue" onclick="startGame('medium')">
+            🔵 中级模式<br><span style="font-size:12px;font-weight:normal;">含 炸弹+摇晃道具，关闭物理体感</span>
+        </button>
+        <button class="btn-core btn-pink" onclick="startGame('hard')">
+            🔴 高级模式<br><span style="font-size:12px;font-weight:normal;">无任何道具，关闭物理体感</span>
+        </button>
+    </div>
 </div>
 
 <div id="arcade-container">
@@ -556,7 +553,6 @@
         <div id="danger-line"><span id="danger-label">苗友应激警戒线 ⚠️</span></div>
         <div id="dropper-preview"></div>
 
-        <!-- 道具栏：左上角并排显示 -->
         <div id="tools-container">
             <div id="bomb-container" class="tool-btn">
                 <span class="tool-icon">💣</span>
@@ -568,7 +564,6 @@
             </div>
         </div>
 
-        <!-- 暂停与存档蒙层 -->
         <div id="pause-mask">
             <div id="save-toast">✨ 进度已成功保存 ✨</div>
             <div class="pause-title">游戏暂停</div>
@@ -577,6 +572,8 @@
                 <button class="btn-core btn-orange" onclick="togglePause()">继续游戏 ▶️</button>
                 <button class="btn-core btn-blue" onclick="showSaveMenu()">保存进度 💾</button>
                 <button class="btn-core btn-green" id="load-btn" onclick="showLoadMenu()">读取进度 📂</button>
+                <!-- ★ 新增：重选模式按钮 ★ -->
+                <button class="btn-core btn-pink" onclick="reselectMode()">重选模式 🔄</button>
             </div>
 
             <div id="save-menu" style="display:none; background:#FFF5E1; padding: 20px; border-radius:15px; width: 85%; max-width: 300px; border: 3px solid #FAD6A5;">
@@ -603,7 +600,13 @@
                     <div class="poster-badge">✨ 苗友成绩单 ✨</div>
                     <img src="xiemiao.png" alt="谢苗" style="width: 32px; height: 32px; object-fit: contain; mix-blend-mode: multiply;">
                 </div>
-                <div class="poster-title">合成大苗哥</div>
+                
+                <!-- 带有难度标识的成绩单标题 -->
+                <div style="display: flex; align-items: flex-start; justify-content: center; margin: 6px 0 12px 0;">
+                    <div class="poster-title">合成大苗哥</div>
+                    <div id="poster-mode-badge" style="font-size: 12px; color: white; background-color: #FF9800; padding: 2px 6px; border-radius: 8px; margin-left: 6px; font-weight: bold; margin-top: 4px;">初级</div>
+                </div>
+
                 <div class="score-layout">
                     <div class="poster-egg-img"></div>
                     <div class="poster-score-box">
@@ -631,7 +634,6 @@
     </div>
 </div>
 
-<!-- 拖拽时屏幕跟随的虚拟道具 -->
 <div id="ghost-tool">
     <div id="ghost-tool-indicator"></div>
     <span id="ghost-tool-icon"></span>
@@ -641,11 +643,13 @@
     const AudioCtx = window.AudioContext || window.webkitAudioContext;
     let audioCtx = null;
     let bgmStarted = false;
-    let motionInitialized = false;
+    let sensorsStarted = false;
     let lastAcc = { x: 0, y: 0, z: 0 };
     let lastShakeTime = 0;
     
-    // 状态控制
+    // 全局状态控制
+    let gameMode = 'easy'; // 'easy', 'medium', 'hard'
+    const modeNames = { 'easy': '初级', 'medium': '中级', 'hard': '高级' };
     let isPaused = false;
     let bombCount = 0;
     let shakeCount = 3;
@@ -664,8 +668,8 @@
     const bgm = document.getElementById('bgm');
     const pauseMask = document.getElementById('pause-mask');
     const initMask = document.getElementById('init-mask');
-    const startGameBtn = document.getElementById('start-game-btn');
     
+    const toolsContainer = document.getElementById('tools-container');
     const bombContainer = document.getElementById('bomb-container');
     const bombCountEl = document.getElementById('bomb-count');
     const shakeContainer = document.getElementById('shake-container');
@@ -678,9 +682,9 @@
     const loadBtn = document.getElementById('load-btn');
     const saveToast = document.getElementById('save-toast');
 
-    // ★ 启动授权：解决所有移动端的权限问题 ★
-    startGameBtn.addEventListener('click', () => {
-        // 初始化音频上下文
+    function startGame(mode) {
+        gameMode = mode;
+        
         initAudio();
         bgm.volume = 0.25;
         bgm.play().then(() => {
@@ -690,12 +694,29 @@
             bgmStarted = true;
         }).catch(e => console.log(e));
 
-        // 请求传感器权限 (针对 iOS 13+)
+        if (mode === 'hard') {
+            toolsContainer.style.display = 'none';
+            shakeCount = 0; 
+            bombCount = 0;
+        } else {
+            toolsContainer.style.display = 'flex';
+            updateShakeUI();
+        }
+
+        if (mode === 'easy') {
+            startMotionSensors();
+        }
+
+        initMask.style.display = 'none';
+    }
+
+    function startMotionSensors() {
+        if (sensorsStarted) return;
+        sensorsStarted = true;
+
         if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
             DeviceMotionEvent.requestPermission().then(state => {
-                if (state === 'granted') {
-                    window.addEventListener('devicemotion', handleMotion);
-                }
+                if (state === 'granted') window.addEventListener('devicemotion', handleMotion);
             }).catch(console.error);
         } else {
             window.addEventListener('devicemotion', handleMotion);
@@ -703,17 +724,20 @@
 
         if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
             DeviceOrientationEvent.requestPermission().then(state => {
-                if (state === 'granted') {
-                    window.addEventListener('deviceorientation', handleOrientation);
-                }
+                if (state === 'granted') window.addEventListener('deviceorientation', handleOrientation);
             }).catch(console.error);
         } else {
             window.addEventListener('deviceorientation', handleOrientation);
         }
+    }
 
-        motionInitialized = true;
-        initMask.style.display = 'none'; // 隐藏遮罩，进入游戏
-    });
+    function stopMotionSensors() {
+        if (!sensorsStarted) return;
+        window.removeEventListener('devicemotion', handleMotion);
+        window.removeEventListener('deviceorientation', handleOrientation);
+        sensorsStarted = false;
+        engine.gravity.x = 0; 
+    }
 
     bgmToggle.addEventListener('click', (e) => {
         e.stopPropagation(); 
@@ -766,6 +790,16 @@
     }
     pauseToggle.addEventListener('click', (e) => { e.stopPropagation(); togglePause(); });
 
+    // ★ 重选模式逻辑 ★
+    function reselectMode() {
+        if (score > 0) {
+            if (!confirm("重新选择模式将放弃当前未保存的局内进度，是否确定？")) {
+                return;
+            }
+        }
+        location.reload(); // 直接重新加载网页，完美重置游戏回到初始难度选择菜单
+    }
+
     function showSaveMenu() {
         document.getElementById('pause-main-btns').style.display = 'none';
         document.getElementById('save-menu').style.display = 'block';
@@ -812,7 +846,7 @@
             }));
 
         const saves = getSaves();
-        saves[name] = { score, highestLevel, bombCount, shakeCount, currentDropLevel, bodies: bodiesData };
+        saves[name] = { score, highestLevel, bombCount, shakeCount, currentDropLevel, bodies: bodiesData, mode: gameMode };
         localStorage.setItem('miaoGeSaves', JSON.stringify(saves));
         
         saveToast.innerText = `✨ [${name}] 保存成功 ✨`;
@@ -834,10 +868,23 @@
         bombCount = data.bombCount || 0;
         shakeCount = (data.shakeCount !== undefined) ? data.shakeCount : 3;
         currentDropLevel = data.currentDropLevel || 0;
+        gameMode = data.mode || 'easy'; 
+
+        if (gameMode === 'hard') {
+            toolsContainer.style.display = 'none';
+        } else {
+            toolsContainer.style.display = 'flex';
+            updateBombUI();
+            updateShakeUI();
+        }
+
+        if (gameMode === 'easy') {
+            startMotionSensors();
+        } else {
+            stopMotionSensors();
+        }
         
         scoreEl.innerText = score;
-        updateBombUI();
-        updateShakeUI();
         
         const info = ROLES[currentDropLevel];
         previewEl.style.width = (info.radius * 2) + 'px';
@@ -881,14 +928,13 @@
     }
 
     function startDragTool(type, e) {
-        if (isGameOver || isPaused) return;
+        if (isGameOver || isPaused || gameMode === 'hard') return;
         if (type === 'bomb' && bombCount <= 0) return;
         if (type === 'shake' && shakeCount <= 0) return;
         
         e.preventDefault(); e.stopPropagation();
         currentDragTool = type;
         
-        // ★ 统一炸弹和摇晃的范围：最小 role1，最大放大到涵盖 role16 级别的范围 ★
         minBlastRadius = ROLES[0].radius;
         maxBlastRadius = ROLES[15].radius * 1.5; 
         
@@ -1016,7 +1062,6 @@
         setTimeout(() => { wrapper.classList.remove('shake'); wave.remove(); }, 300);
     }
 
-    // ★ 强力摇晃/震飞重组 ★
     function executeShake(x, y, radius) {
         shakeCount--;
         updateShakeUI();
@@ -1027,7 +1072,6 @@
             if (b.roleInfo && !b.isStatic) {
                 const dist = Matter.Vector.magnitude(Matter.Vector.sub(b.position, {x, y}));
                 if (dist < radius + b.roleInfo.radius) {
-                    // 爆发出强烈的向外弹力与上扬力，直接震飞重组
                     const forceMagnitude = (0.04 + Math.random() * 0.04) * b.mass;
                     let angle = Math.atan2(b.position.y - y, b.position.x - x);
                     if (dist < 5) angle = Math.random() * Math.PI * 2; 
@@ -1067,7 +1111,7 @@
     }
 
     function updateBombUI() {
-        if (bombCount > 0) {
+        if (bombCount > 0 && gameMode !== 'hard') {
             bombContainer.style.display = 'flex';
             bombCountEl.innerText = `炸弹 × ${bombCount}`;
         } else {
@@ -1076,6 +1120,7 @@
     }
 
     function updateShakeUI() {
+        if (gameMode === 'hard') return;
         shakeCountEl.innerText = `摇晃 × ${shakeCount}`;
         if (shakeCount <= 0) {
             shakeContainer.classList.add('tool-disabled');
@@ -1217,20 +1262,19 @@
         }
     }
 
-    // ========== 传感器逻辑 ==========
+    // ========== 降低灵敏度版传感器逻辑 ==========
     function handleOrientation(event) {
-        if (isPaused || isGameOver) return;
+        if (isPaused || isGameOver || gameMode !== 'easy') return;
         let gamma = event.gamma; 
         if (gamma === null) return;
-        if (gamma > 40) gamma = 40;
-        if (gamma < -40) gamma = -40;
-        engine.gravity.x = gamma / 40; 
+        if (gamma > 45) gamma = 45;
+        if (gamma < -45) gamma = -45;
+        engine.gravity.x = gamma / 60; 
     }
 
     function handleMotion(event) {
-        if (isPaused || isGameOver || !event.accelerationIncludingGravity) return;
+        if (isPaused || isGameOver || gameMode !== 'easy' || !event.accelerationIncludingGravity) return;
         
-        // 获取加速度
         let ax = event.acceleration?.x || event.accelerationIncludingGravity?.x || 0;
         let ay = event.acceleration?.y || event.accelerationIncludingGravity?.y || 0;
         let az = event.acceleration?.z || event.accelerationIncludingGravity?.z || 0;
@@ -1241,8 +1285,7 @@
 
         lastAcc = { x: ax, y: ay, z: az };
         
-        // ★ 修复：轻微晃动 (挤入缝隙) ★
-        if (deltaX > 1.2 || deltaY > 1.2 || deltaZ > 1.2) {
+        if (deltaX > 2.0 || deltaY > 2.0 || deltaZ > 2.0) {
             const bodies = Composite.allBodies(engine.world);
             bodies.forEach(b => {
                 if (b.roleInfo && !b.isStatic) {
@@ -1253,9 +1296,7 @@
             });
         }
         
-        // ★ 修复：用力摇晃手机触发全屏大地震 ★
-        // 降低阈值到 8，更灵敏
-        if (deltaX > 8 || deltaY > 8 || deltaZ > 8) {
+        if (deltaX > 12 || deltaY > 12 || deltaZ > 12) {
             const now = Date.now();
             if (now - lastShakeTime > 800) {
                 lastShakeTime = now;
@@ -1286,7 +1327,6 @@
     let width = rect.width;
     let height = rect.height;
 
-    // 核心尺寸修改：1-7(等级0-6)无缩水，8(等级7)往后压缩防止拥挤
     const scaleFactor = Math.min(1.0, Math.max(0.85, width / 400));
 
     const RAW_ROLES = [
@@ -1460,7 +1500,7 @@
         canDrop = false;
 
         const info = ROLES[currentDropLevel];
-        const dropY = height * 0.04; // 恢复为最上方的安全下落位置
+        const dropY = height * 0.04; 
         const circle = Bodies.circle(currentX, dropY, info.radius, {
             restitution: 0.02, 
             friction: 0.005,   
@@ -1516,8 +1556,10 @@
 
                         if (nextLevel > highestLevel) {
                             highestLevel = nextLevel;
-                            bombCount++;
-                            updateBombUI();
+                            if (gameMode !== 'hard') {
+                                bombCount++;
+                                updateBombUI();
+                            }
                         }
 
                         score += (nextLevel + 1) * 3;
@@ -1533,14 +1575,12 @@
         });
     });
 
-    // 警戒线改用高度的10%
     const DANGER_Y = height * 0.10; 
     setInterval(() => {
         if (isGameOver || isPaused) return;
         const bodies = Composite.allBodies(engine.world);
         bodies.forEach(b => {
             if (b.roleInfo && (b.position.y - b.roleInfo.radius < DANGER_Y)) {
-                // 确保只有静止并堆积上去的球才会判定GameOver
                 if (Math.abs(b.velocity.y) < 0.2 && Math.abs(b.velocity.x) < 0.2 && b.position.y > (height * 0.08)) {
                     triggerGameOver();
                 }
@@ -1552,6 +1592,9 @@
         isGameOver = true;
         previewEl.style.display = 'none';
         document.getElementById('tools-container').style.display = 'none';
+        
+        document.getElementById('poster-mode-badge').innerText = modeNames[gameMode];
+
         finalScoreEl.innerText = score;
         maxRoleTag.innerText = `解锁最高形态：${ROLES[highestLevel].year} · ${ROLES[highestLevel].name}`;
         gameOverMask.style.display = 'flex';
