@@ -47,7 +47,7 @@
             box-shadow: 0 10px 25px rgba(200, 180, 160, 0.5);
         }
 
-        /* 顶部看板：温馨复古波点风格 */
+        /* 顶部看板 */
         .top-bar {
             width: 100%;
             padding: 10px 12px;
@@ -91,6 +91,27 @@
             white-space: nowrap;
         }
 
+        /* 音乐与暂停开关 */
+        .icon-btn {
+            width: 32px;
+            height: 32px;
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid #DEB887;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 14px;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(210, 105, 30, 0.15);
+            transition: transform 0.2s, opacity 0.2s;
+            flex-shrink: 0;
+        }
+        .icon-btn:active { transform: scale(0.9); }
+        .bgm-paused { opacity: 0.6; }
+        @keyframes spinBgm { 100% { transform: rotate(360deg); } }
+        .bgm-playing { animation: spinBgm 4s linear infinite; }
+
         .score-board {
             text-align: right;
             background: #FFFFFF;
@@ -99,7 +120,6 @@
             border: 2px dashed #DEB887;
             white-space: nowrap;
         }
-        
         .score-label {
             font-size: 14px;
             color: #FF9800;
@@ -115,36 +135,6 @@
             text-shadow: 0 0 8px rgba(255, 152, 0, 0.4);
         }
 
-        /* 音乐开关按钮嵌入到顶部栏 */
-        #bgm-toggle {
-            width: 32px;
-            height: 32px;
-            background: rgba(255, 255, 255, 0.9);
-            border: 2px solid #DEB887;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 15px;
-            cursor: pointer;
-            box-shadow: 0 2px 5px rgba(210, 105, 30, 0.15);
-            transition: transform 0.2s, opacity 0.2s;
-            flex-shrink: 0;
-        }
-        #bgm-toggle:active {
-            transform: scale(0.9);
-        }
-        .bgm-paused {
-            opacity: 0.6;
-        }
-        @keyframes spinBgm {
-            100% { transform: rotate(360deg); }
-        }
-        .bgm-playing {
-            animation: spinBgm 4s linear infinite;
-        }
-
-        /* 游戏主舞台 */
         #game-wrapper {
             position: relative;
             width: 100%;
@@ -156,7 +146,6 @@
             touch-action: none;
         }
 
-        /* 警戒线：高度上调至 10% */
         #danger-line {
             position: absolute;
             left: 0;
@@ -181,20 +170,64 @@
             animation: warningGlow 1.5s ease-in-out infinite alternate;
         }
         @keyframes warningGlow {
-            0% { 
-                text-shadow: 0 0 4px rgba(255, 255, 255, 0.9), 0 0 8px rgba(255, 107, 107, 0.3); 
-                transform: scale(0.98); 
-            }
-            100% { 
-                text-shadow: 0 0 8px rgba(255, 255, 255, 1), 0 0 15px rgba(255, 107, 107, 0.7); 
-                transform: scale(1.02); 
-            }
+            0% { text-shadow: 0 0 4px rgba(255, 255, 255, 0.9), 0 0 8px rgba(255, 107, 107, 0.3); transform: scale(0.98); }
+            100% { text-shadow: 0 0 8px rgba(255, 255, 255, 1), 0 0 15px rgba(255, 107, 107, 0.7); transform: scale(1.02); }
         }
 
-        /* 下落指示球 */
+        /* 道具栏：左上角并排显示 */
+        #tools-container {
+            position: absolute;
+            left: 10px;
+            top: 15px;
+            display: flex;
+            gap: 8px;
+            z-index: 20;
+        }
+        .tool-btn {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 8px;
+            padding: 4px 8px;
+            display: flex; 
+            align-items: center;
+            gap: 4px;
+            cursor: grab;
+            transition: transform 0.2s, opacity 0.2s;
+        }
+        .tool-btn:active { cursor: grabbing; transform: scale(0.95); }
+        .tool-icon { font-size: 14px; pointer-events: none; }
+        .tool-count { font-size: 12px; font-weight: 900; pointer-events: none; white-space: nowrap;}
+        
+        #bomb-container { border: 2px solid #FF334B; box-shadow: 2px 4px 8px rgba(255, 51, 75, 0.2); display: none; }
+        #bomb-container .tool-count { color: #FF334B; }
+        
+        #shake-container { border: 2px solid #4169E1; box-shadow: 2px 4px 8px rgba(65, 105, 225, 0.2); }
+        #shake-container .tool-count { color: #4169E1; }
+        .tool-disabled { opacity: 0.5; pointer-events: none; border-color: #999 !important; }
+        .tool-disabled .tool-count { color: #999 !important; }
+
+        /* 拖动时的虚拟道具图层与蓄力圈 */
+        #ghost-tool {
+            display: none;
+            position: fixed;
+            font-size: 30px;
+            z-index: 9999;
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+        }
+        #ghost-tool-indicator {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            border: 2px dashed;
+            width: 100px; height: 100px;
+            transition: width 0.05s, height 0.05s;
+            z-index: -1;
+        }
+
         #dropper-preview {
             position: absolute;
-            top: 4%;
+            top: 4%; 
             left: 50%;
             transform: translateX(-50%);
             border-radius: 50%;
@@ -213,18 +246,14 @@
             text-align: center;
             padding: 4px;
             background-color: #FFE4C4;
+            transition: left 0.1s;
         }
 
-        /* 连击浮动大字 - 温馨米色发光样式 */
         .combo-text {
             position: absolute;
             font-weight: 900;
             color: #FFFDF9; 
-            text-shadow: 
-                -1px -1px 0 #D2691E, 1px -1px 0 #D2691E, -1px 1px 0 #D2691E, 1px 1px 0 #D2691E, 
-                0 0 12px #FFB6C1, 
-                0 0 22px #FAD6A5, 
-                0 0 30px #FFA07A; 
+            text-shadow: -1px -1px 0 #D2691E, 1px -1px 0 #D2691E, -1px 1px 0 #D2691E, 1px 1px 0 #D2691E, 0 0 12px #FFB6C1, 0 0 22px #FAD6A5, 0 0 30px #FFA07A; 
             pointer-events: none;
             z-index: 25;
             animation: comboFly 1s ease-out forwards;
@@ -237,9 +266,7 @@
             100% { opacity: 0; transform: translate(-50%, -130%) scale(0.85); }
         }
 
-        .shake {
-            animation: screenShake 0.15s cubic-bezier(.36,.07,.19,.97) both;
-        }
+        .shake { animation: screenShake 0.15s cubic-bezier(.36,.07,.19,.97) both; }
         @keyframes screenShake {
             10%, 90% { transform: translate3d(-2px, 0, 0); }
             20%, 80% { transform: translate3d(3px, 0, 0); }
@@ -247,7 +274,57 @@
             40%, 60% { transform: translate3d(4px, 0, 0); }
         }
 
-        /* 结算蒙层 */
+        /* 授权启动页 */
+        #init-mask {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255, 248, 234, 0.98);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 99999;
+        }
+        .init-title {
+            font-size: 36px;
+            font-weight: 900;
+            color: #D2691E;
+            margin-bottom: 20px;
+            letter-spacing: 2px;
+            text-shadow: 0 4px 10px rgba(210, 105, 30, 0.2);
+        }
+        .init-desc {
+            color: #8B5A2B;
+            font-size: 14px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 0 20px;
+            line-height: 1.6;
+        }
+
+        /* 暂停与存档蒙层 */
+        #pause-mask {
+            display: none;
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255, 248, 234, 0.85);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 40;
+        }
+        .pause-title {
+            font-size: 32px;
+            font-weight: 900;
+            color: #D2691E;
+            letter-spacing: 4px;
+            margin-bottom: 25px;
+            text-shadow: 0 4px 10px rgba(210, 105, 30, 0.2);
+        }
+
         #game-over-mask {
             display: none;
             position: absolute;
@@ -256,7 +333,7 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            z-index: 30;
+            z-index: 50;
             padding: 10px;
             overflow-y: auto;
         }
@@ -271,11 +348,11 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            padding: 16px 12px;
+            padding: 20px 12px;
+            box-sizing: border-box;
             box-shadow: 0 10px 25px rgba(200, 180, 160, 0.4);
         }
 
-        /* 纯白胶囊底座 */
         .poster-header-pill {
             display: flex;
             align-items: center;
@@ -294,7 +371,6 @@
             white-space: nowrap;
             margin: 0 10px;
         }
-
         .poster-title {
             font-size: 26px;
             font-weight: 900;
@@ -315,7 +391,6 @@
             width: 100%;
         }
 
-        /* 背景图模式彩蛋图，防拉伸 */
         .poster-egg-img {
             width: 80px;
             height: 80px;
@@ -405,12 +480,11 @@
         .btn-group {
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 12px;
             margin-top: 10px;
             width: 85%;
             max-width: 320px;
         }
-
         .btn-core {
             border: none;
             padding: 12px 0;
@@ -423,23 +497,40 @@
             color: white;
             white-space: nowrap;
         }
-        .btn-orange {
-            background-color: #FFA07A;
-            box-shadow: 0 4px 0 #E9967A;
+        .btn-orange { background-color: #FFA07A; box-shadow: 0 4px 0 #E9967A; }
+        .btn-pink { background-color: #FFB6C1; box-shadow: 0 4px 0 #FF69B4; }
+        .btn-blue { background-color: #6495ED; box-shadow: 0 4px 0 #4169E1; }
+        .btn-green { background-color: #3CB371; box-shadow: 0 4px 0 #2E8B57; }
+        .btn-core:active { transform: translateY(4px); box-shadow: none; }
+        
+        #save-toast {
+            position: absolute;
+            top: -40px;
+            background: #FFF5E1;
+            color: #D2691E;
+            font-weight: 900;
+            padding: 6px 16px;
+            border-radius: 15px;
+            border: 2px dashed #DEB887;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            opacity: 0;
+            transition: opacity 0.3s, top 0.3s;
+            pointer-events: none;
+            z-index: 100;
         }
-        .btn-pink {
-            background-color: #FFB6C1;
-            box-shadow: 0 4px 0 #FF69B4;
-        }
-        .btn-core:active {
-            transform: translateY(4px);
-            box-shadow: none;
-        }
+        .toast-show { top: 30px !important; opacity: 1 !important; }
     </style>
 </head>
 <body>
 
 <audio id="bgm" src="./my-bgm.mp3" loop preload="auto"></audio>
+
+<!-- 启动授权页：解决iOS无法调用摇一摇和音频的问题 -->
+<div id="init-mask">
+    <div class="init-title">合成大苗哥</div>
+    <div class="init-desc">为了获得完整的摇晃体感与音效体验<br>请点击下方按钮进入游戏</div>
+    <button id="start-game-btn" class="btn-core btn-orange" style="width: 220px; font-size: 18px; padding: 15px 0;">进入游戏 ▶️</button>
+</div>
 
 <div id="arcade-container">
     <div class="top-bar">
@@ -451,8 +542,8 @@
             </div>
         </div>
         <div class="header-layout">
-            <!-- BGM音乐开关已移至谢苗头像左侧 -->
-            <div id="bgm-toggle" class="bgm-paused">🔇</div>
+            <div id="bgm-toggle" class="icon-btn bgm-paused">🔇</div>
+            <div id="pause-toggle" class="icon-btn">⏸️</div>
             <div class="score-board">
                 <div class="score-label">总战力</div>
                 <div class="score-val" id="score">0</div>
@@ -465,6 +556,46 @@
         <div id="danger-line"><span id="danger-label">苗友应激警戒线 ⚠️</span></div>
         <div id="dropper-preview"></div>
 
+        <!-- 道具栏：左上角并排显示 -->
+        <div id="tools-container">
+            <div id="bomb-container" class="tool-btn">
+                <span class="tool-icon">💣</span>
+                <span id="bomb-count" class="tool-count">炸弹 × 0</span>
+            </div>
+            <div id="shake-container" class="tool-btn">
+                <span class="tool-icon">🌀</span>
+                <span id="shake-count" class="tool-count">摇晃 × 3</span>
+            </div>
+        </div>
+
+        <!-- 暂停与存档蒙层 -->
+        <div id="pause-mask">
+            <div id="save-toast">✨ 进度已成功保存 ✨</div>
+            <div class="pause-title">游戏暂停</div>
+            
+            <div id="pause-main-btns" class="btn-group" style="width: 220px; gap: 15px;">
+                <button class="btn-core btn-orange" onclick="togglePause()">继续游戏 ▶️</button>
+                <button class="btn-core btn-blue" onclick="showSaveMenu()">保存进度 💾</button>
+                <button class="btn-core btn-green" id="load-btn" onclick="showLoadMenu()">读取进度 📂</button>
+            </div>
+
+            <div id="save-menu" style="display:none; background:#FFF5E1; padding: 20px; border-radius:15px; width: 85%; max-width: 300px; border: 3px solid #FAD6A5;">
+                <h3 style="color:#D2691E; text-align:center; margin-bottom:15px;">新建存档</h3>
+                <input type="text" id="save-name-input" placeholder="请输入存档名称..." style="width: 100%; padding: 10px; margin-bottom: 15px; border: 2px solid #DEB887; border-radius: 8px; font-weight:bold; color:#5C4033; font-size:14px; text-align:center;">
+                <div style="display:flex; gap:10px;">
+                    <button class="btn-core btn-blue" style="flex:1;" onclick="confirmSave()">确认保存</button>
+                    <button class="btn-core btn-pink" style="flex:1;" onclick="backToPause()">取消</button>
+                </div>
+            </div>
+
+            <div id="load-menu" style="display:none; background:#FFF5E1; padding: 20px; border-radius:15px; width: 85%; max-width: 300px; border: 3px solid #FAD6A5;">
+                <h3 style="color:#D2691E; text-align:center; margin-bottom:15px;">读取存档</h3>
+                <div id="save-list" style="max-height: 200px; overflow-y: auto; display:flex; flex-direction:column; gap:8px; margin-bottom:15px;">
+                </div>
+                <button class="btn-core btn-pink" style="width:100%;" onclick="backToPause()">返回</button>
+            </div>
+        </div>
+
         <div id="game-over-mask">
             <div id="capture-area">
                 <div class="poster-header-pill">
@@ -473,7 +604,6 @@
                     <img src="xiemiao.png" alt="谢苗" style="width: 32px; height: 32px; object-fit: contain; mix-blend-mode: multiply;">
                 </div>
                 <div class="poster-title">合成大苗哥</div>
-                
                 <div class="score-layout">
                     <div class="poster-egg-img"></div>
                     <div class="poster-score-box">
@@ -481,9 +611,7 @@
                         <div class="poster-score-num" id="final-score">0</div>
                     </div>
                 </div>
-
                 <div class="poster-role-tag" id="max-role-tag">解锁最高形态：-</div>
-                
                 <div style="display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 12px; white-space: nowrap;">
                     <img src="avatar-logo.png" alt="Logo" style="width: 30px; height: 30px; object-fit: contain; border-radius: 50%; border: 1.5px solid #FAD6A5;">
                     <div class="poster-footer">演员谢苗超话制作</div>
@@ -503,49 +631,486 @@
     </div>
 </div>
 
+<!-- 拖拽时屏幕跟随的虚拟道具 -->
+<div id="ghost-tool">
+    <div id="ghost-tool-indicator"></div>
+    <span id="ghost-tool-icon"></span>
+</div>
+
 <script>
     const AudioCtx = window.AudioContext || window.webkitAudioContext;
     let audioCtx = null;
     let bgmStarted = false;
-    let userToggledBgm = false; 
+    let motionInitialized = false;
+    let lastAcc = { x: 0, y: 0, z: 0 };
+    let lastShakeTime = 0;
     
+    // 状态控制
+    let isPaused = false;
+    let bombCount = 0;
+    let shakeCount = 3;
+    let currentDragTool = null; 
+    
+    // 蓄力参数
+    let minBlastRadius = 20; 
+    let maxBlastRadius = 60; 
+    let currentBlastRadius = 20;
+    let growTimer = null;
+    let fuseOscNode = null;
+    let fuseGainNode = null;
+
     const bgmToggle = document.getElementById('bgm-toggle');
+    const pauseToggle = document.getElementById('pause-toggle');
     const bgm = document.getElementById('bgm');
+    const pauseMask = document.getElementById('pause-mask');
+    const initMask = document.getElementById('init-mask');
+    const startGameBtn = document.getElementById('start-game-btn');
+    
+    const bombContainer = document.getElementById('bomb-container');
+    const bombCountEl = document.getElementById('bomb-count');
+    const shakeContainer = document.getElementById('shake-container');
+    const shakeCountEl = document.getElementById('shake-count');
+    
+    const ghostTool = document.getElementById('ghost-tool');
+    const ghostIcon = document.getElementById('ghost-tool-icon');
+    const ghostInd = document.getElementById('ghost-tool-indicator');
+    
+    const loadBtn = document.getElementById('load-btn');
+    const saveToast = document.getElementById('save-toast');
+
+    // ★ 启动授权：解决所有移动端的权限问题 ★
+    startGameBtn.addEventListener('click', () => {
+        // 初始化音频上下文
+        initAudio();
+        bgm.volume = 0.25;
+        bgm.play().then(() => {
+            bgmToggle.innerText = '🎵';
+            bgmToggle.classList.remove('bgm-paused');
+            bgmToggle.classList.add('bgm-playing');
+            bgmStarted = true;
+        }).catch(e => console.log(e));
+
+        // 请求传感器权限 (针对 iOS 13+)
+        if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
+            DeviceMotionEvent.requestPermission().then(state => {
+                if (state === 'granted') {
+                    window.addEventListener('devicemotion', handleMotion);
+                }
+            }).catch(console.error);
+        } else {
+            window.addEventListener('devicemotion', handleMotion);
+        }
+
+        if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
+            DeviceOrientationEvent.requestPermission().then(state => {
+                if (state === 'granted') {
+                    window.addEventListener('deviceorientation', handleOrientation);
+                }
+            }).catch(console.error);
+        } else {
+            window.addEventListener('deviceorientation', handleOrientation);
+        }
+
+        motionInitialized = true;
+        initMask.style.display = 'none'; // 隐藏遮罩，进入游戏
+    });
 
     bgmToggle.addEventListener('click', (e) => {
         e.stopPropagation(); 
         if (bgm.paused) {
-            bgm.volume = 0.25;
             bgm.play();
             bgmToggle.innerText = '🎵';
             bgmToggle.classList.remove('bgm-paused');
             bgmToggle.classList.add('bgm-playing');
-            userToggledBgm = false;
         } else {
             bgm.pause();
             bgmToggle.innerText = '🔇';
             bgmToggle.classList.add('bgm-paused');
             bgmToggle.classList.remove('bgm-playing');
-            userToggledBgm = true;
         }
-        bgmStarted = true; 
     });
 
-    function startBGM() {
-        if (!bgmStarted && !userToggledBgm) {
-            bgm.volume = 0.25; 
-            bgm.play().then(() => {
-                bgmToggle.innerText = '🎵';
-                bgmToggle.classList.remove('bgm-paused');
-                bgmToggle.classList.add('bgm-playing');
-            }).catch(e => console.log("等待用户交互以播放BGM", e));
-            bgmStarted = true;
+    // ========== 存档与读档系统 ==========
+    function getSaves() {
+        let saves = localStorage.getItem('miaoGeSaves');
+        return saves ? JSON.parse(saves) : {};
+    }
+
+    function updateLoadButtonState() {
+        const saves = getSaves();
+        if (Object.keys(saves).length > 0) {
+            loadBtn.style.opacity = '1';
+            loadBtn.style.pointerEvents = 'auto';
+            loadBtn.innerText = '读取进度 📂';
+        } else {
+            loadBtn.style.opacity = '0.5';
+            loadBtn.style.pointerEvents = 'none';
+            loadBtn.innerText = '暂无存档 📂';
         }
     }
 
+    function togglePause() {
+        if(isGameOver) return;
+        isPaused = !isPaused;
+        if(isPaused) {
+            Runner.stop(runner);
+            updateLoadButtonState();
+            pauseToggle.innerText = '▶️';
+            pauseMask.style.display = 'flex';
+            backToPause();
+        } else {
+            Runner.run(runner, engine);
+            pauseToggle.innerText = '⏸️';
+            pauseMask.style.display = 'none';
+        }
+    }
+    pauseToggle.addEventListener('click', (e) => { e.stopPropagation(); togglePause(); });
+
+    function showSaveMenu() {
+        document.getElementById('pause-main-btns').style.display = 'none';
+        document.getElementById('save-menu').style.display = 'block';
+        let d = new Date();
+        let timeStr = `${d.getMonth()+1}月${d.getDate()}日 ${d.getHours()}:${String(d.getMinutes()).padStart(2,'0')}`;
+        document.getElementById('save-name-input').value = `存档_${timeStr}`;
+    }
+
+    function showLoadMenu() {
+        document.getElementById('pause-main-btns').style.display = 'none';
+        document.getElementById('load-menu').style.display = 'block';
+        const saves = getSaves();
+        const list = document.getElementById('save-list');
+        list.innerHTML = '';
+        const keys = Object.keys(saves).reverse(); 
+        if (keys.length === 0) {
+            list.innerHTML = '<div style="text-align:center; color:#888;">暂无存档</div>';
+        } else {
+            keys.forEach(k => {
+                const b = document.createElement('button');
+                b.className = 'btn-core btn-orange';
+                b.style.padding = '8px';
+                b.innerText = k;
+                b.onclick = () => confirmLoad(k);
+                list.appendChild(b);
+            });
+        }
+    }
+
+    function backToPause() {
+        document.getElementById('save-menu').style.display = 'none';
+        document.getElementById('load-menu').style.display = 'none';
+        document.getElementById('pause-main-btns').style.display = 'flex';
+        updateLoadButtonState();
+    }
+
+    function confirmSave() {
+        const name = document.getElementById('save-name-input').value.trim() || '默认存档';
+        const bodiesData = Composite.allBodies(engine.world)
+            .filter(b => b.roleInfo && !b.isStatic)
+            .map(b => ({
+                x: b.position.x, y: b.position.y, angle: b.angle,
+                vx: b.velocity.x, vy: b.velocity.y, level: b.roleInfo.level
+            }));
+
+        const saves = getSaves();
+        saves[name] = { score, highestLevel, bombCount, shakeCount, currentDropLevel, bodies: bodiesData };
+        localStorage.setItem('miaoGeSaves', JSON.stringify(saves));
+        
+        saveToast.innerText = `✨ [${name}] 保存成功 ✨`;
+        saveToast.classList.add('toast-show');
+        setTimeout(() => saveToast.classList.remove('toast-show'), 2000);
+        backToPause();
+    }
+
+    function confirmLoad(name) {
+        const saves = getSaves();
+        const data = saves[name];
+        if(!data) return;
+
+        const activeBodies = Composite.allBodies(engine.world).filter(b => b.roleInfo && !b.isStatic);
+        Composite.remove(engine.world, activeBodies);
+        
+        score = data.score || 0;
+        highestLevel = data.highestLevel || 0;
+        bombCount = data.bombCount || 0;
+        shakeCount = (data.shakeCount !== undefined) ? data.shakeCount : 3;
+        currentDropLevel = data.currentDropLevel || 0;
+        
+        scoreEl.innerText = score;
+        updateBombUI();
+        updateShakeUI();
+        
+        const info = ROLES[currentDropLevel];
+        previewEl.style.width = (info.radius * 2) + 'px';
+        previewEl.style.height = (info.radius * 2) + 'px';
+        const img = roleImages[currentDropLevel];
+        if (img && img.src && img.complete && img.naturalWidth !== 0) {
+            previewEl.style.backgroundImage = `url('${img.src}')`;
+            previewEl.innerText = "";
+        } else {
+            previewEl.style.backgroundImage = "none";
+            previewEl.innerText = info.name;
+            previewEl.style.fontSize = Math.max(11, Math.round(info.radius * 0.32)) + 'px';
+        }
+        updatePreviewPos(width / 2);
+        
+        const restoredBodies = data.bodies.map(d => {
+            const rInfo = ROLES[d.level];
+            const circle = Bodies.circle(d.x, d.y, rInfo.radius, {
+                angle: d.angle, restitution: 0.05, friction: 0.01, density: 0.005, render: { visible: false }
+            });
+            Matter.Body.setVelocity(circle, { x: d.vx, y: d.vy });
+            circle.roleInfo = rInfo;
+            return circle;
+        });
+        Composite.add(engine.world, restoredBodies);
+        
+        backToPause();
+        togglePause();
+    }
+
+    // ========== 统一道具拖拽与蓄力循环逻辑 ==========
+    bombContainer.addEventListener('mousedown', (e) => startDragTool('bomb', e));
+    bombContainer.addEventListener('touchstart', (e) => startDragTool('bomb', e), {passive: false});
+    
+    shakeContainer.addEventListener('mousedown', (e) => startDragTool('shake', e));
+    shakeContainer.addEventListener('touchstart', (e) => startDragTool('shake', e), {passive: false});
+
+    function updateToolIndicator() {
+        ghostInd.style.width = (currentBlastRadius * 2) + 'px';
+        ghostInd.style.height = (currentBlastRadius * 2) + 'px';
+    }
+
+    function startDragTool(type, e) {
+        if (isGameOver || isPaused) return;
+        if (type === 'bomb' && bombCount <= 0) return;
+        if (type === 'shake' && shakeCount <= 0) return;
+        
+        e.preventDefault(); e.stopPropagation();
+        currentDragTool = type;
+        
+        // ★ 统一炸弹和摇晃的范围：最小 role1，最大放大到涵盖 role16 级别的范围 ★
+        minBlastRadius = ROLES[0].radius;
+        maxBlastRadius = ROLES[15].radius * 1.5; 
+        
+        if (type === 'bomb') {
+            ghostIcon.innerText = '💣';
+            ghostInd.style.borderColor = '#FF334B';
+            ghostInd.style.background = 'radial-gradient(circle, rgba(255,51,75,0.4) 0%, rgba(255,51,75,0.1) 100%)';
+        } else {
+            ghostIcon.innerText = '🌀';
+            ghostInd.style.borderColor = '#4169E1';
+            ghostInd.style.background = 'radial-gradient(circle, rgba(65,105,225,0.4) 0%, rgba(65,105,225,0.1) 100%)';
+        }
+        currentBlastRadius = minBlastRadius; 
+        
+        ghostTool.style.display = 'block';
+        updateGhostToolPos(e);
+        updateToolIndicator();
+
+        startFuseSound();
+
+        growTimer = setInterval(() => {
+            currentBlastRadius += 1.5; 
+            if (currentBlastRadius > maxBlastRadius) {
+                currentBlastRadius = minBlastRadius; 
+            }
+            updateToolIndicator();
+        }, 20);
+
+        document.addEventListener('mousemove', moveDragTool);
+        document.addEventListener('touchmove', moveDragTool, {passive: false});
+        document.addEventListener('mouseup', endDragTool);
+        document.addEventListener('touchend', endDragTool);
+    }
+
+    function updateGhostToolPos(e) {
+        const x = e.touches ? e.touches[0].clientX : e.clientX;
+        const y = e.touches ? e.touches[0].clientY : e.clientY;
+        ghostTool.style.left = x + 'px';
+        ghostTool.style.top = y + 'px';
+    }
+
+    function moveDragTool(e) {
+        if (!currentDragTool) return;
+        e.preventDefault(); e.stopPropagation();
+        updateGhostToolPos(e);
+    }
+
+    function endDragTool(e) {
+        if (!currentDragTool) return;
+        const toolType = currentDragTool;
+        currentDragTool = null;
+        ghostTool.style.display = 'none';
+        
+        clearInterval(growTimer);
+        stopFuseSound();
+
+        document.removeEventListener('mousemove', moveDragTool);
+        document.removeEventListener('touchmove', moveDragTool);
+        document.removeEventListener('mouseup', endDragTool);
+        document.removeEventListener('touchend', endDragTool);
+
+        let x, y;
+        if (e.changedTouches) {
+            x = e.changedTouches[0].clientX;
+            y = e.changedTouches[0].clientY;
+        } else {
+            x = e.clientX;
+            y = e.clientY;
+        }
+
+        const box = wrapper.getBoundingClientRect();
+        if (x >= box.left && x <= box.right && y >= box.top && y <= box.bottom) {
+            const localX = x - box.left;
+            const localY = y - box.top;
+            if (toolType === 'bomb') {
+                executeBomb(localX, localY, currentBlastRadius);
+            } else if (toolType === 'shake') {
+                executeShake(localX, localY, currentBlastRadius);
+            }
+        }
+    }
+
+    function executeBomb(x, y, radius) {
+        bombCount--;
+        updateBombUI();
+        
+        const bodies = Composite.allBodies(engine.world);
+        const toRemove = [];
+        
+        bodies.forEach(b => {
+            if (b.roleInfo && !b.isStatic) {
+                const dist = Matter.Vector.magnitude(Matter.Vector.sub(b.position, {x, y}));
+                if (dist < radius + b.roleInfo.radius) {
+                    toRemove.push(b);
+                    score += (b.roleInfo.level + 1) * 2; 
+                }
+            }
+        });
+        
+        Composite.remove(engine.world, toRemove);
+        scoreEl.innerText = score;
+        playSoundEffect('bombExplode');
+
+        const wave = document.createElement('div');
+        wave.style.position = 'absolute';
+        wave.style.left = `${x}px`;
+        wave.style.top = `${y}px`;
+        wave.style.width = '0px';
+        wave.style.height = '0px';
+        wave.style.borderRadius = '50%';
+        wave.style.background = 'radial-gradient(circle, rgba(255,51,75,0.8) 0%, rgba(255,160,122,0) 70%)';
+        wave.style.transform = 'translate(-50%, -50%)';
+        wave.style.zIndex = '20';
+        wave.style.pointerEvents = 'none';
+        wave.style.transition = 'all 0.3s cubic-bezier(0.1, 0.8, 0.3, 1)';
+        wrapper.appendChild(wave);
+
+        requestAnimationFrame(() => {
+            wave.style.width = `${radius * 2.2}px`;
+            wave.style.height = `${radius * 2.2}px`;
+            wave.style.opacity = '0';
+        });
+
+        wrapper.classList.add('shake');
+        setTimeout(() => { wrapper.classList.remove('shake'); wave.remove(); }, 300);
+    }
+
+    // ★ 强力摇晃/震飞重组 ★
+    function executeShake(x, y, radius) {
+        shakeCount--;
+        updateShakeUI();
+        
+        const bodies = Composite.allBodies(engine.world);
+        
+        bodies.forEach(b => {
+            if (b.roleInfo && !b.isStatic) {
+                const dist = Matter.Vector.magnitude(Matter.Vector.sub(b.position, {x, y}));
+                if (dist < radius + b.roleInfo.radius) {
+                    // 爆发出强烈的向外弹力与上扬力，直接震飞重组
+                    const forceMagnitude = (0.04 + Math.random() * 0.04) * b.mass;
+                    let angle = Math.atan2(b.position.y - y, b.position.x - x);
+                    if (dist < 5) angle = Math.random() * Math.PI * 2; 
+                    
+                    const forceX = Math.cos(angle) * forceMagnitude;
+                    const forceY = Math.sin(angle) * forceMagnitude - (0.06 * b.mass); 
+                    
+                    Matter.Body.applyForce(b, b.position, { x: forceX, y: forceY });
+                }
+            }
+        });
+        
+        playSoundEffect('reorganize');
+
+        const wave = document.createElement('div');
+        wave.style.position = 'absolute';
+        wave.style.left = `${x}px`;
+        wave.style.top = `${y}px`;
+        wave.style.width = '0px';
+        wave.style.height = '0px';
+        wave.style.borderRadius = '50%';
+        wave.style.background = 'radial-gradient(circle, rgba(65,105,225,0.8) 0%, rgba(65,105,225,0) 70%)';
+        wave.style.transform = 'translate(-50%, -50%)';
+        wave.style.zIndex = '20';
+        wave.style.pointerEvents = 'none';
+        wave.style.transition = 'all 0.3s cubic-bezier(0.1, 0.8, 0.3, 1)';
+        wrapper.appendChild(wave);
+
+        requestAnimationFrame(() => {
+            wave.style.width = `${radius * 2.2}px`;
+            wave.style.height = `${radius * 2.2}px`;
+            wave.style.opacity = '0';
+        });
+
+        wrapper.classList.add('shake');
+        setTimeout(() => { wrapper.classList.remove('shake'); wave.remove(); }, 300);
+    }
+
+    function updateBombUI() {
+        if (bombCount > 0) {
+            bombContainer.style.display = 'flex';
+            bombCountEl.innerText = `炸弹 × ${bombCount}`;
+        } else {
+            bombContainer.style.display = 'none';
+        }
+    }
+
+    function updateShakeUI() {
+        shakeCountEl.innerText = `摇晃 × ${shakeCount}`;
+        if (shakeCount <= 0) {
+            shakeContainer.classList.add('tool-disabled');
+        } else {
+            shakeContainer.classList.remove('tool-disabled');
+        }
+    }
+
+    // ========== 音效系统 ==========
     function initAudio() {
         if (!audioCtx) audioCtx = new AudioCtx();
         if (audioCtx.state === 'suspended') audioCtx.resume();
+    }
+
+    function startFuseSound() {
+        initAudio();
+        fuseOscNode = audioCtx.createOscillator();
+        fuseGainNode = audioCtx.createGain();
+        fuseOscNode.type = 'sawtooth';
+        fuseOscNode.frequency.setValueAtTime(200, audioCtx.currentTime);
+        fuseOscNode.frequency.exponentialRampToValueAtTime(1000, audioCtx.currentTime + 2.5); 
+        
+        fuseGainNode.gain.setValueAtTime(0.05, audioCtx.currentTime);
+        
+        fuseOscNode.connect(fuseGainNode);
+        fuseGainNode.connect(audioCtx.destination);
+        fuseOscNode.start();
+    }
+
+    function stopFuseSound() {
+        if (fuseOscNode) {
+            fuseOscNode.stop();
+            fuseOscNode.disconnect();
+            fuseOscNode = null;
+        }
     }
 
     function playSoundEffect(type, comboLevel = 1) {
@@ -563,7 +1128,6 @@
             gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.05);
             oscillator.start(audioCtx.currentTime);
             oscillator.stop(audioCtx.currentTime + 0.05);
-            
         } else if (type === 'correct') {
             oscillator.type = 'triangle';
             oscillator.frequency.setValueAtTime(600, audioCtx.currentTime); 
@@ -572,7 +1136,6 @@
             gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
             oscillator.start(audioCtx.currentTime);
             oscillator.stop(audioCtx.currentTime + 0.15);
-
         } else if (type === 'combo') {
             oscillator.type = 'sine';
             const baseFreq = 600 + (comboLevel * 80); 
@@ -582,7 +1145,6 @@
             gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
             oscillator.start(audioCtx.currentTime);
             oscillator.stop(audioCtx.currentTime + 0.15);
-
         } else if (type === 'triumph') {
             oscillator.type = 'triangle';
             oscillator.frequency.setValueAtTime(523.25, audioCtx.currentTime);
@@ -592,36 +1154,57 @@
             gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
             oscillator.start(audioCtx.currentTime);
             oscillator.stop(audioCtx.currentTime + 0.4);
+        } else if (type === 'bombExplode') {
+            const bufferSize = audioCtx.sampleRate * 0.5;
+            const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+            const data = buffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+            
+            const noise = audioCtx.createBufferSource();
+            noise.buffer = buffer;
+            const noiseFilter = audioCtx.createBiquadFilter();
+            noiseFilter.type = 'lowpass';
+            noiseFilter.frequency.setValueAtTime(1000, audioCtx.currentTime);
+            noiseFilter.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.5);
+
+            const nGain = audioCtx.createGain();
+            nGain.gain.setValueAtTime(0.8, audioCtx.currentTime);
+            nGain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+
+            noise.connect(noiseFilter);
+            noiseFilter.connect(nGain);
+            nGain.connect(audioCtx.destination);
+            noise.start();
+
+            oscillator.type = 'sine';
+            oscillator.frequency.setValueAtTime(150, audioCtx.currentTime);
+            oscillator.frequency.exponentialRampToValueAtTime(20, audioCtx.currentTime + 0.5);
+            gainNode.gain.setValueAtTime(1, audioCtx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+            oscillator.start(audioCtx.currentTime);
+            oscillator.stop(audioCtx.currentTime + 0.5);
+        } else if (type === 'reorganize') {
+            oscillator.type = 'sine';
+            oscillator.frequency.setValueAtTime(400, audioCtx.currentTime);
+            oscillator.frequency.exponentialRampToValueAtTime(800, audioCtx.currentTime + 0.3);
+            gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+            oscillator.start(audioCtx.currentTime);
+            oscillator.stop(audioCtx.currentTime + 0.3);
         }
     }
 
     let comboCount = 0;
     let lastMergeTime = 0;
-    
-    const COMBO_WORDS = [
-        "SO COOL~",
-        "苗友狂喜",
-        "一路走来",
-        "打好每一拳",
-        "给苗哥递锤子",
-        "中国功夫！",
-        "真打！真狠！真解恨！",
-        "打爆全球！",
-        "hey hey！"
-    ];
+    const COMBO_WORDS = ["SO COOL~", "苗友狂喜", "一路走来", "打好每一拳", "给苗哥递锤子", "中国功夫！", "真打！真狠！真解恨！", "打爆全球！", "hey hey！"];
 
     function triggerComboPopup(x, y) {
         const now = Date.now();
-        if (now - lastMergeTime < 950) {
-            comboCount++;
-        } else {
-            comboCount = 1;
-        }
+        if (now - lastMergeTime < 950) { comboCount++; } else { comboCount = 1; }
         lastMergeTime = now;
 
         if (comboCount >= 2) {
             playSoundEffect('combo', comboCount);
-            
             const word = COMBO_WORDS[Math.floor(Math.random() * COMBO_WORDS.length)];
             const span = document.createElement('div');
             span.className = 'combo-text';
@@ -634,6 +1217,64 @@
         }
     }
 
+    // ========== 传感器逻辑 ==========
+    function handleOrientation(event) {
+        if (isPaused || isGameOver) return;
+        let gamma = event.gamma; 
+        if (gamma === null) return;
+        if (gamma > 40) gamma = 40;
+        if (gamma < -40) gamma = -40;
+        engine.gravity.x = gamma / 40; 
+    }
+
+    function handleMotion(event) {
+        if (isPaused || isGameOver || !event.accelerationIncludingGravity) return;
+        
+        // 获取加速度
+        let ax = event.acceleration?.x || event.accelerationIncludingGravity?.x || 0;
+        let ay = event.acceleration?.y || event.accelerationIncludingGravity?.y || 0;
+        let az = event.acceleration?.z || event.accelerationIncludingGravity?.z || 0;
+        
+        let deltaX = Math.abs(ax - lastAcc.x);
+        let deltaY = Math.abs(ay - lastAcc.y);
+        let deltaZ = Math.abs(az - lastAcc.z);
+
+        lastAcc = { x: ax, y: ay, z: az };
+        
+        // ★ 修复：轻微晃动 (挤入缝隙) ★
+        if (deltaX > 1.2 || deltaY > 1.2 || deltaZ > 1.2) {
+            const bodies = Composite.allBodies(engine.world);
+            bodies.forEach(b => {
+                if (b.roleInfo && !b.isStatic) {
+                    const jiggleX = (Math.random() - 0.5) * 0.002 * b.mass;
+                    const jiggleY = -(Math.random() * 0.002) * b.mass; 
+                    Matter.Body.applyForce(b, b.position, { x: jiggleX, y: jiggleY });
+                }
+            });
+        }
+        
+        // ★ 修复：用力摇晃手机触发全屏大地震 ★
+        // 降低阈值到 8，更灵敏
+        if (deltaX > 8 || deltaY > 8 || deltaZ > 8) {
+            const now = Date.now();
+            if (now - lastShakeTime > 800) {
+                lastShakeTime = now;
+                const bodies = Composite.allBodies(engine.world);
+                bodies.forEach(b => {
+                    if (b.roleInfo && !b.isStatic) {
+                        const forceX = (Math.random() - 0.5) * 0.05 * b.mass;
+                        const forceY = -(0.05 + Math.random() * 0.08) * b.mass;
+                        Matter.Body.applyForce(b, b.position, { x: forceX, y: forceY });
+                    }
+                });
+                playSoundEffect('reorganize');
+                wrapper.classList.add('shake');
+                setTimeout(() => wrapper.classList.remove('shake'), 300);
+            }
+        }
+    }
+
+    // ========== 物理与核心游戏逻辑 ==========
     const wrapper = document.getElementById('game-wrapper');
     const previewEl = document.getElementById('dropper-preview');
     const scoreEl = document.getElementById('score');
@@ -645,33 +1286,34 @@
     let width = rect.width;
     let height = rect.height;
 
-    // 大幅缩小基准比例，使物品变小
-    const scaleFactor = Math.min(0.95, Math.max(0.75, width / 400));
+    // 核心尺寸修改：1-7(等级0-6)无缩水，8(等级7)往后压缩防止拥挤
+    const scaleFactor = Math.min(1.0, Math.max(0.85, width / 400));
 
     const RAW_ROLES = [
         { level: 0,  name: "洪文定", year: "1994", baseR: 20 },
-        { level: 1,  name: "海远",   year: "1995", baseR: 25 },
-        { level: 2,  name: "巩固",   year: "1995", baseR: 30 },
-        { level: 3,  name: "嬴政",   year: "2001", baseR: 36 },
-        { level: 4,  name: "惠忍",   year: "2008", baseR: 43 },
-        { level: 5,  name: "失烈门", year: "2013", baseR: 50 },
-        { level: 6,  name: "韩晓峰", year: "2017", baseR: 57 },
-        { level: 7,  name: "耿恭",   year: "2019", baseR: 64 },
-        { level: 8,  name: "辛弃疾", year: "2020", baseR: 71 },
-        { level: 9,  name: "杨烈钧", year: "2020", baseR: 78 },
-        { level: 10, name: "李红旗", year: "2021", baseR: 85 },
-        { level: 11, name: "成瞎子", year: "2022", baseR: 92 },
-        { level: 12, name: "张柳成/平", year: "2022", baseR: 99 },
-        { level: 13, name: "黄铭金", year: "2024", baseR: 106 },
-        { level: 14, name: "王伟",   year: "2026", baseR: 114 },
-        { level: 15, name: "苗哥本人", year: "2026+", baseR: 124 }
+        { level: 1,  name: "海远",   year: "1995", baseR: 24 },
+        { level: 2,  name: "巩固",   year: "1995", baseR: 28 },
+        { level: 3,  name: "嬴政",   year: "2001", baseR: 33 },
+        { level: 4,  name: "惠忍",   year: "2008", baseR: 38 },
+        { level: 5,  name: "失烈门", year: "2013", baseR: 44 },
+        { level: 6,  name: "韩晓峰", year: "2017", baseR: 50 }, 
+        
+        { level: 7,  name: "耿恭",   year: "2019", baseR: 54 }, 
+        { level: 8,  name: "辛弃疾", year: "2020", baseR: 58 },
+        { level: 9,  name: "杨烈钧", year: "2020", baseR: 62 },
+        { level: 10, name: "李红旗", year: "2021", baseR: 66 },
+        { level: 11, name: "成瞎子", year: "2022", baseR: 70 },
+        { level: 12, name: "张柳成", year: "2022", baseR: 74 },
+        { level: 13, name: "黄铭金", year: "2024", baseR: 78 },
+        { level: 14, name: "王伟",   year: "2026", baseR: 82 },
+        { level: 15, name: "苗哥本人", year: "2026+", baseR: 86 }
     ];
 
     const ROLES = RAW_ROLES.map(item => ({
         level: item.level,
         name: item.name,
         year: item.year,
-        radius: Math.round(item.baseR * scaleFactor)
+        radius: item.level <= 6 ? item.baseR : Math.round(item.baseR * scaleFactor)
     }));
 
     const roleImages = [];
@@ -679,20 +1321,11 @@
         ROLES.forEach((role, index) => {
             const num = index + 1;
             const img = new Image();
-            // 穷举全机型可能的文件格式与命名方式
             const candidatePaths = [
-                `./images/role${num}.png`,
-                `./images/role${num}.jpg`,
-                `./images/role${num}.jpeg`,
-                `./images/role${num}.jfif`,
-                `./images/role(${num}).png`,
-                `./images/role(${num}).jpg`,
-                `./images/role(${num}).jpeg`,
-                `./images/role(${num}).jfif`,
-                `./images/role${num}.PNG`,
-                `./images/role${num}.JPG`,
-                `./images/role(${num}).PNG`,
-                `./images/role(${num}).JPG`
+                `./images/role${num}.png`,`./images/role${num}.jpg`,`./images/role${num}.jpeg`,`./images/role${num}.jfif`,`./images/role${num}.webp`,
+                `./images/role(${num}).png`,`./images/role(${num}).jpg`,`./images/role(${num}).jpeg`,`./images/role(${num}).jfif`,`./images/role(${num}).webp`,
+                `./images/role ${num}.png`,`./images/role ${num}.jpg`,`./images/role0${num}.png`,`./images/role0${num}.jpg`,
+                `./images/role${num}.PNG`,`./images/role${num}.JPG`,`./images/role(${num}).PNG`,`./images/role(${num}).JPG`
             ];
             let attempt = 0;
             img.onerror = () => {
@@ -716,10 +1349,8 @@
 
     const { Engine, Render, Runner, Bodies, Composite, Events } = Matter;
     const engine = Engine.create({ enableSleeping: false });
-    // 加大重力，便于压实缝隙
-    engine.gravity.y = 1.6;
+    engine.gravity.y = 1.8;
 
-    // 增加 pixelRatio 支持，彻底解决高刷屏手机上小球渲染模糊的问题
     const render = Render.create({
         element: wrapper,
         engine: engine,
@@ -737,15 +1368,9 @@
     Runner.run(runner, engine);
 
     const wallThick = 60;
-    const ground = Bodies.rectangle(width / 2, height + wallThick / 2, width * 2, wallThick, { 
-        isStatic: true, friction: 0.8, render: { visible: false } 
-    });
-    const leftWall = Bodies.rectangle(-wallThick / 2, height / 2, wallThick, height * 2, { 
-        isStatic: true, friction: 0.8, render: { visible: false } 
-    });
-    const rightWall = Bodies.rectangle(width + wallThick / 2, height / 2, wallThick, height * 2, { 
-        isStatic: true, friction: 0.8, render: { visible: false } 
-    });
+    const ground = Bodies.rectangle(width / 2, height + wallThick / 2, width * 2, wallThick, { isStatic: true, friction: 0.8, render: { visible: false } });
+    const leftWall = Bodies.rectangle(-wallThick / 2, height / 2, wallThick, height * 2, { isStatic: true, friction: 0.8, render: { visible: false } });
+    const rightWall = Bodies.rectangle(width + wallThick / 2, height / 2, wallThick, height * 2, { isStatic: true, friction: 0.8, render: { visible: false } });
     Composite.add(engine.world, [ground, leftWall, rightWall]);
 
     Events.on(render, 'afterRender', () => {
@@ -761,7 +1386,6 @@
                 ctx.save();
                 ctx.translate(x, y);
                 ctx.rotate(body.angle);
-
                 ctx.beginPath();
                 ctx.arc(0, 0, r, 0, Math.PI * 2);
                 ctx.clip();
@@ -771,19 +1395,16 @@
                 } else {
                     ctx.fillStyle = "#FFE4C4";
                     ctx.fill();
-                    
                     const calculatedFontSize = Math.max(12, Math.round(r * 0.32));
                     ctx.fillStyle = "#5C4033";
                     ctx.font = `900 ${calculatedFontSize}px sans-serif`;
                     ctx.textAlign = 'center';
                     ctx.textBaseline = 'middle';
-                    
                     ctx.strokeStyle = '#FFFFFF';
                     ctx.lineWidth = 3;
                     ctx.strokeText(body.roleInfo.name, 0, 0);
                     ctx.fillText(body.roleInfo.name, 0, 0);
                 }
-
                 ctx.restore();
                 ctx.save();
                 ctx.translate(x, y);
@@ -798,9 +1419,13 @@
     });
 
     function setupNextDrop() {
-        let maxDropLevel = 3;
-        if (score > 600) maxDropLevel = 4;
-        if (score > 1500) maxDropLevel = 5;
+        let maxDropLevel = 3; 
+        if (score > 300) maxDropLevel = 4;
+        if (highestLevel >= 5) maxDropLevel = 5;
+        if (highestLevel >= 7) maxDropLevel = 6;
+        if (highestLevel >= 9) maxDropLevel = 7;
+        if (highestLevel >= 11) maxDropLevel = 8; 
+        if (highestLevel >= 13) maxDropLevel = 9; 
 
         currentDropLevel = Math.floor(Math.random() * maxDropLevel);
         const info = ROLES[currentDropLevel];
@@ -831,14 +1456,14 @@
     }
 
     function dropRole() {
-        if (!canDrop || isGameOver) return;
+        if (!canDrop || isGameOver || isPaused || currentDragTool) return;
         canDrop = false;
 
         const info = ROLES[currentDropLevel];
-        // 降低摩擦力和弹力，使小球极易顺畅滑入缝隙堆叠
-        const circle = Bodies.circle(currentX, height * 0.05, info.radius, {
-            restitution: 0.05,
-            friction: 0.02,
+        const dropY = height * 0.04; // 恢复为最上方的安全下落位置
+        const circle = Bodies.circle(currentX, dropY, info.radius, {
+            restitution: 0.02, 
+            friction: 0.005,   
             density: 0.005,
             render: { visible: false }
         });
@@ -849,7 +1474,7 @@
         previewEl.style.display = 'none';
 
         setTimeout(() => {
-            if (!isGameOver) {
+            if (!isGameOver && !isPaused) {
                 setupNextDrop();
                 previewEl.style.display = 'flex';
                 canDrop = true;
@@ -876,8 +1501,8 @@
                         Composite.remove(engine.world, [bodyA, bodyB]);
 
                         const newCircle = Bodies.circle(midX, midY, nextInfo.radius, {
-                            restitution: 0.05,
-                            friction: 0.02,
+                            restitution: 0.02,
+                            friction: 0.005,
                             density: 0.005,
                             render: { visible: false }
                         });
@@ -889,7 +1514,11 @@
                             setTimeout(() => wrapper.classList.remove('shake'), 160);
                         }
 
-                        if (nextLevel > highestLevel) highestLevel = nextLevel;
+                        if (nextLevel > highestLevel) {
+                            highestLevel = nextLevel;
+                            bombCount++;
+                            updateBombUI();
+                        }
 
                         score += (nextLevel + 1) * 3;
                         scoreEl.innerText = score;
@@ -904,14 +1533,14 @@
         });
     });
 
-    // 采用新修改的 10% 警戒线界限逻辑
-    const DANGER_Y = height * 0.10;
+    // 警戒线改用高度的10%
+    const DANGER_Y = height * 0.10; 
     setInterval(() => {
-        if (isGameOver) return;
+        if (isGameOver || isPaused) return;
         const bodies = Composite.allBodies(engine.world);
-
         bodies.forEach(b => {
             if (b.roleInfo && (b.position.y - b.roleInfo.radius < DANGER_Y)) {
+                // 确保只有静止并堆积上去的球才会判定GameOver
                 if (Math.abs(b.velocity.y) < 0.2 && Math.abs(b.velocity.x) < 0.2 && b.position.y > (height * 0.08)) {
                     triggerGameOver();
                 }
@@ -922,6 +1551,7 @@
     function triggerGameOver() {
         isGameOver = true;
         previewEl.style.display = 'none';
+        document.getElementById('tools-container').style.display = 'none';
         finalScoreEl.innerText = score;
         maxRoleTag.innerText = `解锁最高形态：${ROLES[highestLevel].year} · ${ROLES[highestLevel].name}`;
         gameOverMask.style.display = 'flex';
@@ -933,7 +1563,6 @@
         const finalPosterImg = document.getElementById('final-poster-img');
         const genBtn = document.getElementById('gen-poster-btn');
 
-        // 锁定高精度缩放配置，杜绝任何形变拉伸
         html2canvas(captureArea, {
             scale: 3,
             backgroundColor: "#FFF5E1",
@@ -943,7 +1572,6 @@
         }).then(canvas => {
             const imgData = canvas.toDataURL('image/png');
             finalPosterImg.src = imgData;
-
             captureArea.style.display = 'none';
             genBtn.style.display = 'none';
             mobilePosterBox.style.display = 'flex';
@@ -951,18 +1579,31 @@
     }
 
     function handlePointerCoord(e) {
+        if (isPaused || currentDragTool) return;
         const box = wrapper.getBoundingClientRect();
         const clientX = e.touches ? e.touches[0].clientX : e.clientX;
         updatePreviewPos(clientX - box.left);
     }
 
-    wrapper.addEventListener('touchstart', (e) => { startBGM(); handlePointerCoord(e); }, { passive: true });
-    wrapper.addEventListener('touchmove', (e) => { if (canDrop) handlePointerCoord(e); }, { passive: true });
-    wrapper.addEventListener('touchend', () => { dropRole(); });
+    wrapper.addEventListener('touchstart', (e) => { 
+        if(!currentDragTool) handlePointerCoord(e);
+    }, { passive: true });
+    wrapper.addEventListener('touchmove', (e) => { 
+        if (canDrop && !isPaused && !currentDragTool) handlePointerCoord(e); 
+    }, { passive: true });
+    wrapper.addEventListener('touchend', () => { 
+        if(!currentDragTool) dropRole(); 
+    });
 
-    wrapper.addEventListener('mousedown', (e) => { startBGM(); handlePointerCoord(e); });
-    wrapper.addEventListener('mousemove', (e) => { if (canDrop) handlePointerCoord(e); });
-    wrapper.addEventListener('mouseup', () => { dropRole(); });
+    wrapper.addEventListener('mousedown', (e) => { 
+        if(!currentDragTool) handlePointerCoord(e);
+    });
+    wrapper.addEventListener('mousemove', (e) => { 
+        if (canDrop && !isPaused && !currentDragTool) handlePointerCoord(e); 
+    });
+    wrapper.addEventListener('mouseup', () => { 
+        if(!currentDragTool) dropRole(); 
+    });
 
     setupNextDrop();
 </script>
