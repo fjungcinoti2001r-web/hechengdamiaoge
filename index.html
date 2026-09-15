@@ -274,7 +274,7 @@
             40%, 60% { transform: translate3d(4px, 0, 0); }
         }
 
-        /* 授权启动页 - 难度选择 */
+        /* --- 独立初始页与难度选择 --- */
         #init-mask {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -285,23 +285,87 @@
             align-items: center;
             z-index: 99999;
         }
-        .init-title {
-            font-size: 36px;
-            font-weight: 900;
-            color: #D2691E;
-            margin-bottom: 20px;
-            letter-spacing: 2px;
-            text-shadow: 0 4px 10px rgba(210, 105, 30, 0.2);
-        }
-        .init-desc {
-            color: #8B5A2B;
-            font-size: 14px;
-            font-weight: bold;
-            text-align: center;
-            margin-bottom: 30px;
-            padding: 0 20px;
+
+        .splash-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 22px;
+            width: 100%;
         }
 
+        .splash-title {
+            font-size: 46px;
+            font-weight: 900;
+            color: #D2691E;
+            text-shadow: 0 4px 10px rgba(210, 105, 30, 0.15);
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+        }
+
+        .splash-pill-solid {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            background: #FFFFFF;
+            border: 3px solid #F3E0C8;
+            border-radius: 40px;
+            padding: 6px 20px 6px 6px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+        }
+
+        .splash-pill-solid img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 1.5px solid #5E4834;
+            object-fit: contain;
+            background-color: #FFF;
+        }
+
+        .splash-pill-solid span {
+            font-size: 20px;
+            color: #5E4834;
+            font-weight: 900;
+        }
+
+        .splash-pill-dashed {
+            border: 2px dashed #D1C0AA;
+            border-radius: 30px;
+            padding: 8px 25px;
+            font-size: 15px;
+            color: #C29F74;
+            font-weight: 900;
+            letter-spacing: 1px;
+        }
+
+        .btn-enter {
+            margin-top: 30px;
+            background-color: #5BBA74;
+            box-shadow: 0 6px 0 #45965A;
+            color: white;
+            font-size: 24px;
+            font-weight: 900;
+            border: none;
+            border-radius: 40px;
+            padding: 16px 60px;
+            cursor: pointer;
+            transition: all 0.2s;
+            letter-spacing: 2px;
+        }
+        .btn-enter:active {
+            transform: translateY(6px);
+            box-shadow: none;
+        }
+
+        #mode-selection {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* 暂停与游戏结束页面 */
         #pause-mask, #game-over-mask {
             display: none;
             position: absolute;
@@ -539,25 +603,45 @@
     <button class="btn-core btn-pink" style="width:100%;" onclick="closeLoadMenu()">返回</button>
 </div>
 
-<!-- 启动授权页 - 难度选择与读档 -->
+<!-- 启动授权页 - 独立欢迎页与难度选择 -->
 <div id="init-mask">
-    <div class="init-title">合成大苗哥</div>
-    <div class="init-desc">请选择适合你的挑战模式</div>
-    <div class="btn-group" style="width: 250px; gap: 15px;">
-        <button class="btn-core btn-green" onclick="startGame('easy')">
-            🟢 初级模式<br><span style="font-size:12px;font-weight:normal;">含 炸弹+摇晃道具，开启物理体感</span>
-        </button>
-        <button class="btn-core btn-blue" onclick="startGame('medium')">
-            🔵 中级模式<br><span style="font-size:12px;font-weight:normal;">含 炸弹+摇晃道具，关闭物理体感</span>
-        </button>
-        <button class="btn-core btn-pink" onclick="startGame('hard')">
-            🔴 高级模式<br><span style="font-size:12px;font-weight:normal;">无任何道具，关闭物理体感</span>
-        </button>
-        <!-- ★ 首页读档按钮 ★ -->
-        <button class="btn-core" style="background-color: #CD853F; box-shadow: 0 4px 0 #8B4513; margin-top: 10px;" id="init-load-btn" onclick="openLoadMenu()">
-            📂 读取本地存档
-        </button>
+    
+    <!-- 状态一：独立初始页面 (仿照参考图排版) -->
+    <div id="splash-screen" class="splash-content">
+        <div class="splash-title">合成大苗哥</div>
+        
+        <div class="splash-pill-solid">
+            <img src="avatar-logo.png" alt="Logo">
+            <span>演员谢苗超话</span>
+        </div>
+        
+        <div class="splash-pill-dashed">
+            制作：林科森 | 制图：老周
+        </div>
+
+        <button class="btn-enter" onclick="showModeSelection()">点击进入</button>
     </div>
+
+    <!-- 状态二：模式选择页面 (默认隐藏，点击后显示) -->
+    <div id="mode-selection" class="splash-content">
+        <div class="init-title" style="font-size: 32px; margin-bottom: 10px; font-weight: 900; color: #D2691E;">选择挑战模式</div>
+        <div class="btn-group" style="width: 250px; gap: 15px;">
+            <button class="btn-core btn-green" onclick="startGame('easy')">
+                🟢 初级模式<br><span style="font-size:12px;font-weight:normal;">含 炸弹+摇晃道具，开启物理体感</span>
+            </button>
+            <button class="btn-core btn-blue" onclick="startGame('medium')">
+                🔵 中级模式<br><span style="font-size:12px;font-weight:normal;">含 炸弹+摇晃道具，关闭物理体感</span>
+            </button>
+            <button class="btn-core btn-pink" onclick="startGame('hard')">
+                🔴 高级模式<br><span style="font-size:12px;font-weight:normal;">无任何道具，关闭物理体感</span>
+            </button>
+            <!-- 首页读档按钮 -->
+            <button class="btn-core" style="background-color: #CD853F; box-shadow: 0 4px 0 #8B4513; margin-top: 10px;" id="init-load-btn" onclick="openLoadMenu()">
+                📂 读取本地存档
+            </button>
+        </div>
+    </div>
+
 </div>
 
 <div id="arcade-container">
@@ -669,6 +753,7 @@
     let sensorsStarted = false;
     let lastAcc = { x: 0, y: 0, z: 0 };
     let lastShakeTime = 0;
+    let shakeProtectionUntil = 0; // 修复：防止摇晃时误判游戏结束的计时器
     
     // 全局状态控制
     let gameMode = 'easy'; // 'easy', 'medium', 'hard'
@@ -705,6 +790,12 @@
     const loadBtn = document.getElementById('load-btn');
     const initLoadBtn = document.getElementById('init-load-btn');
     const saveToast = document.getElementById('save-toast');
+
+    // 切换到模式选择界面
+    function showModeSelection() {
+        document.getElementById('splash-screen').style.display = 'none';
+        document.getElementById('mode-selection').style.display = 'flex';
+    }
 
     function startGame(mode) {
         gameMode = mode;
@@ -1171,6 +1262,7 @@
     function executeShake(x, y, radius) {
         shakeCount--;
         updateShakeUI();
+        shakeProtectionUntil = Date.now() + 3000; // 修复：使用摇晃道具后开启3秒免死保护
         
         const bodies = Composite.allBodies(engine.world);
         
@@ -1406,6 +1498,8 @@
             const now = Date.now();
             if (now - lastShakeTime > 800) {
                 lastShakeTime = now;
+                shakeProtectionUntil = now + 3000; // 修复：体感摇晃后开启3秒免死保护
+
                 const bodies = Composite.allBodies(engine.world);
                 bodies.forEach(b => {
                     if (b.roleInfo && !b.isStatic) {
@@ -1515,9 +1609,15 @@
 
     const wallThick = 60;
     const ground = Bodies.rectangle(width / 2, height + wallThick / 2, width * 2, wallThick, { isStatic: true, friction: 0.8, render: { visible: false } });
-    const leftWall = Bodies.rectangle(-wallThick / 2, height / 2, wallThick, height * 2, { isStatic: true, friction: 0.8, render: { visible: false } });
-    const rightWall = Bodies.rectangle(width + wallThick / 2, height / 2, wallThick, height * 2, { isStatic: true, friction: 0.8, render: { visible: false } });
-    Composite.add(engine.world, [ground, leftWall, rightWall]);
+    
+    // 修复：将左右墙壁向上延伸至 5 倍屏幕高度，防止从侧面飞出
+    const leftWall = Bodies.rectangle(-wallThick / 2, 0, wallThick, height * 5, { isStatic: true, friction: 0.8, render: { visible: false } });
+    const rightWall = Bodies.rectangle(width + wallThick / 2, 0, wallThick, height * 5, { isStatic: true, friction: 0.8, render: { visible: false } });
+    
+    // 修复：增加天花板空气墙（位于屏幕上方 1.2 倍处），将飞太高的球弹回来
+    const ceiling = Bodies.rectangle(width / 2, -height * 1.2, width * 3, wallThick, { isStatic: true, friction: 0, restitution: 0.5, render: { visible: false } });
+    
+    Composite.add(engine.world, [ground, leftWall, rightWall, ceiling]);
 
     Events.on(render, 'afterRender', () => {
         const ctx = render.context;
@@ -1684,6 +1784,10 @@
     const DANGER_Y = height * 0.10; 
     setInterval(() => {
         if (isGameOver || isPaused) return;
+        
+        // 修复：如果还在免死保护期内，直接跳过本轮死亡判定
+        if (Date.now() < shakeProtectionUntil) return; 
+
         const bodies = Composite.allBodies(engine.world);
         bodies.forEach(b => {
             if (b.roleInfo && (b.position.y - b.roleInfo.radius < DANGER_Y)) {
